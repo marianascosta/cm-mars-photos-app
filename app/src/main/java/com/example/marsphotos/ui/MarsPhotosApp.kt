@@ -36,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.marsphotos.R
 import com.example.marsphotos.ui.screens.HomeScreen
 import com.example.marsphotos.ui.screens.MarsViewModel
+import com.example.marsphotos.ui.screens.PicSumViewModel
 
 @Composable
 fun MarsPhotosApp() {
@@ -49,10 +50,17 @@ fun MarsPhotosApp() {
                 .padding(it),
         ) {
             val marsViewModel: MarsViewModel = viewModel()
+            val picSumViewModel: PicSumViewModel = viewModel()
             HomeScreen(
                 marsUiState = marsViewModel.marsUiState,
+                picsumUiState = picSumViewModel.picsumUiState,
+                reloadImages = {
+                    marsViewModel.getMarsPhotos()
+                    picSumViewModel.getPicSumPhotos()
+                },
                 contentPadding = it
             )
+
         }
     }
 }
