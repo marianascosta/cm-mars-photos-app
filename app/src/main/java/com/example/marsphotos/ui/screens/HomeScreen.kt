@@ -169,7 +169,7 @@ fun ResultScreen(
                     isBlackAndWhite = grayscaleMode.value
                 )
                 try {
-                    FirebaseService.savePhotos(
+                    FirebaseService.saveAndRecordPhotos(
                         marsUiState.randomPhoto,
                         updatedPicsumPhoto
                     )

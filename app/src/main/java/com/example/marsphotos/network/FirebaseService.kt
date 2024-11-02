@@ -20,13 +20,18 @@ object FirebaseService {
     private val marsPhotosRef: DatabaseReference = database.getReference("marsPhotos")
     private val picsumPhotosRef: DatabaseReference = database.getReference("picsumPhotos")
 
-    fun savePhotos(marsPhoto: MarsPhoto, picsumPhoto: PicsumPhoto) {
+    fun saveAndRecordPhotos(marsPhoto: MarsPhoto, picsumPhoto: PicsumPhoto) {
+        savePhotos(marsPhoto, picsumPhoto)
+        saveImagesToHistory(marsPhoto, picsumPhoto)
+    }
+
+    private fun savePhotos(marsPhoto: MarsPhoto, picsumPhoto: PicsumPhoto) {
         addTimestamps(marsPhoto, picsumPhoto)
         marsPhotosRef.child(marsPhoto.id).setValue(marsPhoto)
         picsumPhotosRef.child(picsumPhoto.id).setValue(picsumPhoto)
     }
 
-    fun addTimestamps(marsPhoto: MarsPhoto, picsumPhoto: PicsumPhoto){
+    private fun addTimestamps(marsPhoto: MarsPhoto, picsumPhoto: PicsumPhoto){
         val savedAt = System.currentTimeMillis()
         marsPhoto.savedAt = savedAt
         picsumPhoto.savedAt = savedAt
@@ -91,6 +96,17 @@ object FirebaseService {
                 callback(0)
             }
         })
+    }
+
+    private fun saveImagesToHistory(marsPhoto: MarsPhoto, picsumPhoto: PicsumPhoto) {
+        val historyRef = database.getReference("history")
+        val marsPhotoHistoryRef = historyRef.child("marsPhotos")
+        val picsumPhotoHistoryRef = historyRef.child("picsumPhotos")
+
+        addTimestamps(marsPhoto, picsumPhoto)
+
+        marsPhotoHistoryRef.push().setValue(marsPhoto)
+        picsumPhotoHistoryRef.push().setValue(picsumPhoto)
     }
 }
 
