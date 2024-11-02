@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "855377768700",
+    "project_id": "fcul-cm-7fccb",
+    "firebase_url": "https://fcul-cm-7fccb-default-rtdb.europe-west1.firebasedatabase.app",
+    "storage_bucket": "fcul-cm-7fccb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855377768700:android:518c81d3598ab34e952779",
+        "android_client_info": {
+          "package_name": "com.example.marsphotos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8whhCGISRlq06jbLhTKbeGnHLz2epNjw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

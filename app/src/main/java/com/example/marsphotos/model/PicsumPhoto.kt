@@ -35,6 +35,10 @@ data class PicsumPhoto(
     @SerialName(value = "url")
     val url: String,
     @SerialName(value = "download_url")
-    var downloadUrl: String
+    var downloadUrl: String,
+    //extra field is_blurry, is_black_and_white
+    var isBlurry: Boolean = false,
+    var isBlackAndWhite: Boolean = false
 )
+
 

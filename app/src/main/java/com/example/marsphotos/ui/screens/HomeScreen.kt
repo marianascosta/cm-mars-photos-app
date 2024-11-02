@@ -15,6 +15,7 @@
  */
 package com.example.marsphotos.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,6 +49,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.marsphotos.model.MarsPhoto
 import com.example.marsphotos.model.PicsumPhoto
+import com.example.marsphotos.network.FirebaseService
 
 @Composable
 fun HomeScreen(
@@ -110,6 +112,8 @@ fun ResultScreen(
     val picsumURL = remember { mutableStateOf(picsumState.randomPhoto.downloadUrl) }
     val grayscaleMode = remember { mutableStateOf(false) }
     val blurMode = remember { mutableStateOf(false) }
+    val saveMessage = remember { mutableStateOf("") }
+
 
     picsumURL.value = buildString {
         append(picsumState.randomPhoto.downloadUrl)
@@ -139,7 +143,30 @@ fun ResultScreen(
             Button(onClick = { grayscaleMode.value = !grayscaleMode.value }) {
                 Text(text = "Gray")
             }
+
+            Button(onClick = {
+                val updatedPicsumPhoto = picsumState.randomPhoto.copy(
+                    isBlurry = blurMode.value,
+                    isBlackAndWhite = grayscaleMode.value
+                )
+                try {
+                    FirebaseService.savePhotos(
+                        marsUiState.randomPhoto,
+                        updatedPicsumPhoto
+                    )
+                    saveMessage.value = "Photos saved successfully."
+                } catch (e: Exception) {
+                    saveMessage.value = "Failed to save photos."
+                    Log.e("ResultScreen", "Failed to save photos", e)
+                }
+            }) {
+                Text(text = "Save")
+            }
         }
+        Text(
+            text = saveMessage.value,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 
 }

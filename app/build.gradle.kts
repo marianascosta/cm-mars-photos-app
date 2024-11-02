@@ -65,6 +65,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildToolsVersion = "34.0.0"
 }
 
 dependencies {
@@ -98,7 +99,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
 
     // Google Sign In SDK
-    implementation("com.google.android.gms:play-services-auth:20.5.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // Firebase SDK
     implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
