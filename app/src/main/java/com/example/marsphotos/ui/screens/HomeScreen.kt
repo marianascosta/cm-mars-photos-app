@@ -26,15 +26,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -50,6 +46,7 @@ import coil.request.ImageRequest
 import com.example.marsphotos.model.MarsPhoto
 import com.example.marsphotos.model.PicsumPhoto
 import com.example.marsphotos.network.FirebaseService
+import com.example.marsphotos.network.RollsCounter
 
 @Composable
 fun HomeScreen(
@@ -66,7 +63,6 @@ fun HomeScreen(
                 is PicsumState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
                 is PicsumState.Success ->
                     ResultScreen(marsUiState, picsumUiState, reloadImages, modifier.fillMaxWidth())
-
                 is PicsumState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
             }
         }
@@ -151,7 +147,10 @@ fun ResultScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
         ) {
-            Button(onClick = { reloadImages() }) {
+            Button(onClick = {
+                reloadImages()
+                RollsCounter.incrementRolls()
+            }) {
                 Text(text = "Roll")
             }
 
@@ -183,6 +182,9 @@ fun ResultScreen(
                 Text(text = "Save")
             }
         }
+        Text(
+            text = "Rolls: ${RollsCounter.rolls}",
+        )
         Button(onClick = {
             FirebaseService.getLastSavedPhotos { (oldMarsPhoto, oldPicsumPhoto) ->
                 Log.d("ResultScreen", "oldMarsPhoto: $oldMarsPhoto")

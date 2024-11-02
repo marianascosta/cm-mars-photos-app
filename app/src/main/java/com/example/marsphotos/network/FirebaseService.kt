@@ -1,6 +1,9 @@
 package com.example.marsphotos.network
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.example.marsphotos.model.MarsPhoto
 import com.example.marsphotos.model.PicsumPhoto
 import com.google.firebase.database.DataSnapshot
@@ -66,5 +69,38 @@ object FirebaseService {
                     callback(Pair(null, null))
                 }
             })
+    }
+
+    fun saveRolls(amount : Int){
+        val rollsRef = database.getReference("rolls")
+        rollsRef.setValue(amount)
+    }
+
+    fun getRolls(callback: (Int) -> Unit){
+        val rollsRef = database.getReference("rolls")
+        rollsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val rolls = snapshot.getValue(Int::class.java)
+                if (rolls != null) {
+                    callback(rolls)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseService", "Failed to read rolls", error.toException())
+                callback(0)
+            }
+        })
+    }
+}
+
+object RollsCounter {
+    var rolls: Int by mutableStateOf(0)
+    fun loadRolls() {
+        FirebaseService.getRolls { rolls = it }
+    }
+    fun incrementRolls() {
+        rolls+=1
+        FirebaseService.saveRolls(rolls)
     }
 }
