@@ -108,15 +108,15 @@ fun ResultScreen(
     reloadImages: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val picsumURL = remember { mutableStateOf(picsumState.randomPhoto.downloadUrl) }
     val grayscaleMode = remember { mutableStateOf(false) }
     val blurMode = remember { mutableStateOf(false) }
     val saveMessage = remember { mutableStateOf("") }
-
+    val marsPhotoState = remember { mutableStateOf(marsUiState.randomPhoto) }
+    val picsumPhotoState = remember { mutableStateOf(picsumState.randomPhoto) }
 
     picsumURL.value = buildString {
-        append(picsumState.randomPhoto.downloadUrl)
+        append(picsumPhotoState.value.downloadUrl)
         if (blurMode.value || grayscaleMode.value) append("?")
         if (grayscaleMode.value) append("grayscale")
         if (grayscaleMode.value && blurMode.value) append("&")
@@ -127,7 +127,26 @@ fun ResultScreen(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        ResultImages(marsUiState, picsumState, picsumURL)
+        // Mars photo
+        Text(text = marsUiState.photos)
+        AsyncImage(
+            modifier = Modifier.fillMaxWidth(),
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(marsPhotoState.value.imgSrc)
+                .crossfade(true)
+                .build(),
+            contentDescription = "A photo",
+        )
+        // Picsum photo
+        Text(text = picsumState.photos)
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(picsumURL.value)
+                .crossfade(true)
+                .build(),
+            contentDescription = "A photo",
+        )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
@@ -146,6 +165,7 @@ fun ResultScreen(
 
             Button(onClick = {
                 val updatedPicsumPhoto = picsumState.randomPhoto.copy(
+                    downloadUrl = picsumURL.value,
                     isBlurry = blurMode.value,
                     isBlackAndWhite = grayscaleMode.value
                 )
@@ -163,6 +183,21 @@ fun ResultScreen(
                 Text(text = "Save")
             }
         }
+        Button(onClick = {
+            FirebaseService.getLastSavedPhotos { (oldMarsPhoto, oldPicsumPhoto) ->
+                Log.d("ResultScreen", "oldMarsPhoto: $oldMarsPhoto")
+                Log.d("ResultScreen", "oldPicsumPhoto: $oldPicsumPhoto")
+                if (oldMarsPhoto != null && oldPicsumPhoto != null) {
+                    marsPhotoState.value = oldMarsPhoto
+                    picsumPhotoState.value = oldPicsumPhoto
+                    saveMessage.value = "Last saved photos loaded successfully."
+                } else {
+                    saveMessage.value = "Failed to load last saved photos."
+                }
+            }
+        }) {
+            Text(text = "Get Last Saved Photos")
+        }
         Text(
             text = saveMessage.value,
             modifier = Modifier.padding(16.dp)
@@ -171,32 +206,6 @@ fun ResultScreen(
 
 }
 
-@Composable
-fun ResultImages(
-    marsUiState: MarsUiState.Success, picsumState: PicsumState.Success,
-    picsumUrl: MutableState<String>
-) {
-    // Mars photos
-    Text(text = marsUiState.photos)
-    AsyncImage(
-        modifier = Modifier.fillMaxWidth(),
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(marsUiState.randomPhoto.imgSrc)
-            .crossfade(true)
-            .build(),
-        contentDescription = "A photo",
-    )
-    // Picsum photos
-    Text(text = picsumState.photos)
-    val url =
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(picsumUrl.value)
-                .crossfade(true)
-                .build(),
-            contentDescription = "A photo",
-        )
-}
 
 @Preview(showBackground = true)
 @Composable

@@ -25,20 +25,21 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class PicsumPhoto(
-    val id: String,
+    val id: String = "",
     @SerialName(value = "author")
-    val author: String,
+    val author: String = "",
     @SerialName(value = "width")
-    val width: Int,
+    val width: Int = 0,
     @SerialName(value = "height")
-    val height: Int,
+    val height: Int = 0,
     @SerialName(value = "url")
-    val url: String,
+    val url: String = "",
     @SerialName(value = "download_url")
-    var downloadUrl: String,
+    var downloadUrl: String = "",
     //extra field is_blurry, is_black_and_white
     var isBlurry: Boolean = false,
-    var isBlackAndWhite: Boolean = false
+    var isBlackAndWhite: Boolean = false,
+    var savedAt: Long? = null
 )
 
 
