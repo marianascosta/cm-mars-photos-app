@@ -15,7 +15,7 @@ import java.io.IOException
  * UI state for the Home screen
  */
 sealed interface PicsumState {
-    data class Success(val photos: String, val randomPhoto: PicsumPhoto) : PicsumState
+    data class Success(val photos: String, var randomPhoto: PicsumPhoto) : PicsumState
     object Error : PicsumState
     object Loading : PicsumState
 }
