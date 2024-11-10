@@ -1,5 +1,6 @@
 package com.example.marsphotos.network
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,12 +14,17 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import java.util.UUID
 
 object FirebaseService {
 
     private val database: FirebaseDatabase = Firebase.database
     private val marsPhotosRef: DatabaseReference = database.getReference("marsPhotos")
     private val picsumPhotosRef: DatabaseReference = database.getReference("picsumPhotos")
+    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
+    private val storageRef: StorageReference = storage.reference
 
     fun saveAndRecordPhotos(marsPhoto: MarsPhoto, picsumPhoto: PicsumPhoto) {
         savePhotos(marsPhoto, picsumPhoto)
@@ -107,6 +113,31 @@ object FirebaseService {
 
         marsPhotoHistoryRef.push().setValue(marsPhoto)
         picsumPhotoHistoryRef.push().setValue(picsumPhoto)
+    }
+
+    fun saveCapturedImage(imageUri: Uri) {
+        val photoRef = storageRef.child("photos/${UUID.randomUUID()}.jpg")
+
+        photoRef.putFile(imageUri)
+            .addOnSuccessListener {
+                photoRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+                    Log.d("FirebaseService", "Image uploaded successfully: $downloadUrl")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FirebaseService", "Image upload failed: ${exception.message}")
+            }
+    }
+
+    fun getImage(url: String, callback: (Uri) -> Unit) {
+        val photoRef = storage.getReferenceFromUrl(url)
+        photoRef.downloadUrl
+            .addOnSuccessListener { uri ->
+                callback(uri)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FirebaseService", "Image download failed: ${exception.message}")
+            }
     }
 }
 
