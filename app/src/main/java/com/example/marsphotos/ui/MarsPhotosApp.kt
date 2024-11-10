@@ -62,7 +62,6 @@ fun MarsPhotosApp() {
                 },
                 contentPadding = it
             )
-
         }
     }
 }
